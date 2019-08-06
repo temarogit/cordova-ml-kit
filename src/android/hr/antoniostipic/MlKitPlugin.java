@@ -156,9 +156,14 @@ public class MlKitPlugin extends CordovaPlugin {
     private void runTextRecognitionLive(final CallbackContext callbackContext, final ByteBuffer data, final JSONObject frameMetadata, final String language, final Boolean onCloud) {
       try {
 
-          int width = frameMetadata.getInt("width");
-          int height = frameMetadata.getInt("height");
-          int rotation = frameMetadata.getInt("rotation");
+          try{
+            int width = frameMetadata.getInt("width");
+            int height = frameMetadata.getInt("height");
+            int rotation = frameMetadata.getInt("rotation");
+          }catch(JSONException e){
+            e.printStackTrace();
+            callbackContext.error(e.getMessage());
+          }  
 
           FirebaseVisionImageMetadata metadata =
           new FirebaseVisionImageMetadata.Builder()
