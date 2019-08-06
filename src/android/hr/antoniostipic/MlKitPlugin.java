@@ -156,10 +156,14 @@ public class MlKitPlugin extends CordovaPlugin {
     private void runTextRecognitionLive(final CallbackContext callbackContext, final ByteBuffer data, final JSONObject frameMetadata, final String language, final Boolean onCloud) {
       try {
 
+          int width = 0;
+          int height = 0;
+          int rotation = 0;
+
           try{
-            int width = frameMetadata.getInt("width");
-            int height = frameMetadata.getInt("height");
-            int rotation = frameMetadata.getInt("rotation");
+            width = frameMetadata.getInt("width");
+            height = frameMetadata.getInt("height");
+            rotation = frameMetadata.getInt("rotation");
           }catch(JSONException e){
             e.printStackTrace();
             callbackContext.error(e.getMessage());
