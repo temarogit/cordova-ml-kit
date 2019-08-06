@@ -154,7 +154,7 @@ public class MlKitPlugin extends CordovaPlugin {
     }
 
     private void runTextRecognitionLive(final CallbackContext callbackContext, final ByteBuffer data, final JSONObject frameMetadata, final String language, final Boolean onCloud) {
-      try {
+      //try {
 
           int width = 0;
           int height = 0;
@@ -225,10 +225,10 @@ public class MlKitPlugin extends CordovaPlugin {
               e.printStackTrace();
               callbackContext.error(e.getMessage());
           });
-      } catch (IOException e) {
-          e.printStackTrace();
-          callbackContext.error(e.getMessage());
-      }
+      //} catch (IOException e) {
+      //    e.printStackTrace();
+      //    callbackContext.error(e.getMessage());
+      //}
 
   }
 
