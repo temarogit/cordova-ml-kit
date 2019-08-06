@@ -10,9 +10,14 @@ module.exports = {
     options = options || {};
     var language = options.language || '';
     exec(success, error, PLUGIN_NAME, 'getTextCloud', [img, language]);
-  }, getLabel: function (img, options, success, error) {
+  }, 
+  getLabel: function (img, options, success, error) {
     exec(success, error, PLUGIN_NAME, 'getLabel', [img]);
-  }, getLabelCloud: function (img, options, success, error) {
+  }, 
+  getLabelCloud: function (img, options, success, error) {
     exec(success, error, PLUGIN_NAME, 'getLabelCloud', [img]);
+  },
+  getTextLive: function (img, frame, options, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getTextLive', [img, frame]);
   },
 };

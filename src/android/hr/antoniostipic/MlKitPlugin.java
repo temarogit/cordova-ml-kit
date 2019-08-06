@@ -65,6 +65,11 @@ public class MlKitPlugin extends CordovaPlugin {
             final String img = args.getString(0);
             cordova.getThreadPool().execute(() -> runLabelRecognition(callbackContext, img, true));
             return true;
+        }else if (action.equals("getTextLive")) {
+            final String img = args.getString(0);
+            final JSONObject frameMetadata = args.getJSONObject(1);
+            cordova.getThreadPool().execute(() -> runTextRecognitionLive(callbackContext, img, frameMetadata, "", false));
+            return true;
         }
         return false;
     }
@@ -145,6 +150,72 @@ public class MlKitPlugin extends CordovaPlugin {
         }
 
     }
+
+    private void runTextRecognitionLive(final CallbackContext callbackContext, final ByteBuffer data, final JSONObject frameMetadata, final String language, final Boolean onCloud) {
+      
+      try {
+          FirebaseVisionImageMetadata metadata =
+          new FirebaseVisionImageMetadata.Builder()
+              .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+              .setWidth(frameMetadata.width)
+              .setHeight(frameMetadata.height)
+              .setRotation(frameMetadata.rotation)
+              .build();
+
+          FirebaseVisionTextRecognizer textRecognizer;
+
+          if(onCloud) {
+              textRecognizer = this.getTextRecognitionCloud(language);
+          } else {
+              textRecognizer = this.getTextRecognitionDevice();
+          }
+
+          // get image 
+          FirebaseVisionImage image = FirebaseVisionImage.fromByteBuffer(data, metadata);
+
+          textRecognizer.processImage(image).addOnSuccessListener(texts -> {
+            try {
+              JSONObject json = new JSONObject();
+              JSONArray blocks = new JSONArray();
+
+              json.put("text", texts.getText());
+              json.put("textBlocks", blocks);
+
+              for (FirebaseVisionText.TextBlock block : texts.getTextBlocks()) {
+                  Log.d(TAG, block.getText());
+                  JSONObject oBlock = new JSONObject();
+                  JSONArray lines = new JSONArray();
+                  oBlock.put("text", block.getText());
+                  oBlock.put("confidence", block.getConfidence());
+                  oBlock.put("boundingBox", mapBoundingBox(block.getBoundingBox()));
+                  oBlock.put("cornerPoints", mapPoints(block.getCornerPoints()));
+                  oBlock.put("lines", lines);
+                  blocks.put(oBlock);
+
+                  for (FirebaseVisionText.Line line : block.getLines()) {
+                    JSONObject oLine = new JSONObject();
+                    oLine.put("text", line.getText());
+                    oLine.put("confidence", line.getConfidence());
+                    oLine.put("boundingBox", mapBoundingBox(line.getBoundingBox()));
+                    oLine.put("cornerPoints", mapPoints(line.getCornerPoints()));
+                    lines.put(oLine);
+                  }
+              }
+              callbackContext.success(json);
+            } catch(JSONException e) {
+              e.printStackTrace();
+              callbackContext.error(e.getMessage());
+            }
+          }).addOnFailureListener(e -> {
+              e.printStackTrace();
+              callbackContext.error(e.getMessage());
+          });
+      } catch (IOException e) {
+          e.printStackTrace();
+          callbackContext.error(e.getMessage());
+      }
+
+  }
 
     private void runLabelRecognition(final CallbackContext callbackContext, final String img, final Boolean onCloud) {
         Uri imgSource = Uri.parse(img);
