@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import jasva.lang;
 
 import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
@@ -154,14 +155,18 @@ public class MlKitPlugin extends CordovaPlugin {
     }
 
     private void runTextRecognitionLive(final CallbackContext callbackContext, final ByteBuffer data, final JSONObject frameMetadata, final String language, final Boolean onCloud) {
-      
       try {
+
+          int width = frameMetadata.getInt("width");
+          int height = frameMetadata.getInt("height");
+          int rotation = frameMetadata.getInt("rotation");
+
           FirebaseVisionImageMetadata metadata =
           new FirebaseVisionImageMetadata.Builder()
               .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-              .setWidth(frameMetadata.width)
-              .setHeight(frameMetadata.height)
-              .setRotation(frameMetadata.rotation)
+              .setWidth(width)
+              .setHeight(height)
+              .setRotation(rotation)
               .build();
 
           FirebaseVisionTextRecognizer textRecognizer;
