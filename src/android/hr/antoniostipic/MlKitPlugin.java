@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import jasva.lang;
 
 import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
