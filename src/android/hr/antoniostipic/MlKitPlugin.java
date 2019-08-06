@@ -165,9 +165,16 @@ public class MlKitPlugin extends CordovaPlugin {
             height = frameMetadata.getInt("height");
             rotation = frameMetadata.getInt("rotation");
           }catch(JSONException e){
+            Log.d(TAG, "framedata extraction failed");
+            
             e.printStackTrace();
             callbackContext.error(e.getMessage());
           }  
+
+          Log.d(TAG, "frameData Extracted");
+          Log.d(TAG, "width: " + width);
+          Log.d(TAG, "height: " + height);
+          Log.d(TAG, "rotation: " + rotation);
 
           FirebaseVisionImageMetadata metadata =
           new FirebaseVisionImageMetadata.Builder()
@@ -177,6 +184,9 @@ public class MlKitPlugin extends CordovaPlugin {
               .setRotation(rotation)
               .build();
 
+          Log.d(TAG, "metadata initialized");
+          
+
           FirebaseVisionTextRecognizer textRecognizer;
 
           if(onCloud) {
@@ -185,10 +195,17 @@ public class MlKitPlugin extends CordovaPlugin {
               textRecognizer = this.getTextRecognitionDevice();
           }
 
+          Log.d(TAG, "textrecognizer initialized");
+          
+
           // get image 
           FirebaseVisionImage image = FirebaseVisionImage.fromByteBuffer(data, metadata);
 
+          Log.d(TAG, "FirebaseVisionImage extracted");
+
           textRecognizer.processImage(image).addOnSuccessListener(texts -> {
+            Log.d(TAG, "process image successful");
+          
             try {
               JSONObject json = new JSONObject();
               JSONArray blocks = new JSONArray();
@@ -216,12 +233,19 @@ public class MlKitPlugin extends CordovaPlugin {
                     lines.put(oLine);
                   }
               }
+
+              Log.d(TAG, "text extracted");  
+
               callbackContext.success(json);
             } catch(JSONException e) {
+              Log.d(TAG, "text extraction failed");
+
               e.printStackTrace();
               callbackContext.error(e.getMessage());
             }
           }).addOnFailureListener(e -> {
+              Log.d(TAG, "process image failed");
+
               e.printStackTrace();
               callbackContext.error(e.getMessage());
           });
