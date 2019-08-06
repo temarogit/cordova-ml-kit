@@ -27,6 +27,8 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import java.io.IOException;
 import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
@@ -66,7 +68,7 @@ public class MlKitPlugin extends CordovaPlugin {
             cordova.getThreadPool().execute(() -> runLabelRecognition(callbackContext, img, true));
             return true;
         }else if (action.equals("getTextLive")) {
-            final String img = args.getString(0);
+            final ByteBuffer img = str_to_bb(args.getString(0));
             final JSONObject frameMetadata = args.getJSONObject(1);
             cordova.getThreadPool().execute(() -> runTextRecognitionLive(callbackContext, img, frameMetadata, "", false));
             return true;
@@ -291,6 +293,10 @@ public class MlKitPlugin extends CordovaPlugin {
         } else {
             return FirebaseVision.getInstance().getCloudTextRecognizer();
         }
+    }
+
+    private static ByteBuffer str_to_bb(String msg){
+        return ByteBuffer.wrap(msg.getBytes());
     }
 
 }
